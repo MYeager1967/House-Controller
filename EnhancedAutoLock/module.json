@@ -1,0 +1,90 @@
+{
+	"dependencies": [],
+	"singleton": false,
+	"category": "device_enhancements",
+	"author": "Michael Yeager",
+	"homepage": "",
+	"icon": "icon.png",
+    "moduleName": "EnhancedAutoLock",
+	"version": "1.0",
+	"maturity": "Stable/Beta",
+	"repository": {
+		"type": "git",
+		"source": "https://"
+	},
+	"defaults": {
+		"title": "__m_title__",
+		"description": "__m_descr__",
+		"BinarySwitch": null,
+		"BinarySensor": null,
+		"DoorLock": null
+	},
+	"schema": {
+		"type": "object",
+		"properties": {
+			"BinarySwitch1": {
+                "field": "enum",
+                "datasource": "namespaces",
+                "enum": "namespaces:devices_switchBinary:deviceId",
+                "required": true
+            },
+			"BinarySwitch2": {
+                "field": "enum",
+                "datasource": "namespaces",
+                "enum": "namespaces:devices_switchBinary:deviceId,namespaces:devices_switchControl:deviceId",
+                "required": true
+            },
+			"BinarySensor": {
+				"field": "enum",
+				"datasource": "namespaces",
+				"enum": "namespaces:devices_sensorBinary:deviceId",
+				"required": true
+			},
+			"DoorLock": {
+				"field": "enum",
+				"datasource": "namespaces",
+				"enum": "namespaces:devices_doorlock:deviceId",
+				"required": true
+			},
+			"delay": {
+				"type": "integer",
+				"minimum": 1
+			}
+		},
+		"required": true
+	},
+	"options": {
+		"fields": {
+			"BinarySwitch1": {
+                "label": "__l_dev__",
+                "datasource": "namespaces",
+                "field": "optionLabels",
+                "optionLabels": "namespaces:devices_switchBinary:deviceName"
+            },
+			"BinarySwitch2": {
+                "label": "__2_dev__",
+                "datasource": "namespaces",
+                "field": "optionLabels",
+                "optionLabels": "namespaces:devices_switchBinary:deviceName,namespaces:devices_switchControl:deviceId"
+            },
+			"BinarySensor": {
+				"label": "__l_dw_sensor__",
+				"type": "select",
+				"datasource": "namespaces",
+				"field": "optionLabels",
+                "optionLabels": "namespaces:devices_sensorBinary:deviceName"
+			},
+			"DoorLock": {
+				"label": "__l_doorlock__",
+				"type": "select",
+				"datasource": "namespaces",
+				"field": "optionLabels",
+                "optionLabels": "namespaces:devices_doorlock:deviceName"
+			},
+			"delay": {
+				"label": "__l_delay_sec__",
+				"type": "integer"
+			}
+		}
+	}
+}

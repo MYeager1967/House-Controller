@@ -1,0 +1,9 @@
+{
+	"m_title":"Enhanced Automated Locking of Door",
+	"m_descr":"Electronic Doors typically move the dead bolt of the door. If the dead bolt is in the open position the door can be opened and closed using the door handle.  This app will automatically lock the door (means move the dead bolt) when an opened door closes. There is an entry for a switch to turn this feature on and off. The condition switch is a secondary device. Use the feature switch here if you don't have a secondary condition you wish to meet. The closing of the door is detected using a door sensor. Once this sensor signals a closing door the door lock is turned after a defined delay.<br><br>Settings:<br><ul><li>Select the primary switch controlling the feature.</li><li>Select the secondary switch controlling the feature.</li><li>Select the door sensor detecting the position of the door.</li><li>Select the door lock to be controlled.</li><li>Select the delay between the door closed event and the locking event.</li></ul>",
+	"l_dev":"Feature Switch Device",
+	"2_dev":"Condition Switch",
+	"l_dw_sensor":"Door/Window/Motion Sensor",
+	"l_doorlock":"Door Lock",
+	"l_delay_sec":"Delay in seconds"
+}
