@@ -1,0 +1,4 @@
+{
+	"m_title":"HeatIndex",
+	"m_descr":"This module gets the temperature and humidity from selectable sensors and calculates the heat index. It creates a dummy sensor element as well. Module expects input temperature in Celsius and outputs to the display element in Fahrenheit.<br>"
+}
