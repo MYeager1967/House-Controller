@@ -1,0 +1,5 @@
+{
+	"m_title":"TempF",
+	"m_descr":"This simply grabs the temperature from another sensor, converts it to fahrenheit and displays in as a dummy device element.<br>",
+	"l_dev":"Temperature Sensor"
+}

@@ -1,0 +1,42 @@
+{
+    "dependencies": [],
+    "singleton": false,
+    "category": "DummySensor",
+    "author": "Michael Yeager",
+    "homepage": "",
+    "icon": "icon.png",
+	"moduleName": "TempF",
+    "version": "1.0",
+    "maturity": "beta",
+    "repository": {
+            "type": "git",
+            "source": "https://"
+    },
+    "defaults": {
+        "title": "TempF",
+        "description": "Display Temperature in Fahrenheit",
+        "device": ""
+    },
+    "schema": {
+        "type": "object",
+        "properties": {
+            "sensor1": {
+                "field": "enum",
+                "datasource": "namespaces",
+                "enum": "namespaces:devices_sensorMultilevel:deviceId",
+                "required": true
+            }
+        },
+        "required": false
+    },
+    "options": {
+        "fields": {
+            "sensor1": {
+                "label": "Temperature Sensor",
+                "datasource": "namespaces",
+                "field": "optionLabels",
+                "optionLabels": "namespaces:devices_sensorMultilevel:deviceName,namespaces"
+            }
+        }
+    }
+}
