@@ -44,24 +44,19 @@ DummyDevice.prototype.init = function (config) {
             deviceType: this.config.deviceType
         },
         handler: function(command, args) {
-		//  Beginning of new code
-			var type = "switch"
-			if (command == 'toggle') {
-				command = (this.get("metrics:level") === "on" ? "off":"on");
-			}
-		// 	End of new code
+			var type = "switch"																		// New Line
             if (command != 'update') {
                 var level = command;
                 
                 if (this.get('deviceType') === "switchMultilevel") {
-					type = "dimmer"
+					type = "dimmer"																	// New Line
                     if (command === "on") {
                         level = 99;
                     } else if (command === "off") {
                         level = 0;
                     } else {
                         level = args.level;
-						command = "half"		// New Line
+						command = "half"															// New Line
                     }
                 }
 				this.set('metrics:icon',self.imagePath+'/'+type+'_'+command+'.png');				// New Line
