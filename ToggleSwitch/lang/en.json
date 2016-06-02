@@ -1,0 +1,4 @@
+{
+	"m_title":"ToggleSwitch",
+	"m_descr":"ToggleSwitch does exactly what it sounds like. The module is designed to support an external UI without having to keep track of switch status. <br><br>Settings: No further settings.<br>Usage: http://RazIP:8083/Toggle/deviceID (ie. ZWayVDev_zway_10-0-37)"
+}

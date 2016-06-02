@@ -1,0 +1,21 @@
+{
+    "dependencies": [],
+    "singleton": true,
+    "category": "support_external_ui",
+    "author": "Michael Yeager",
+    "homepage": "http://",
+    "icon": "icon.png",
+    "moduleName":"ToggleSwitch",
+    "version": "1.0",
+    "maturity": "stable",
+    "repository": {
+            "type": "git",
+            "source": "https://"
+    },
+    "defaults": {
+        "title": "__m_title__",
+	    "description": "__m_descr__"
+    },
+    "options": {},
+    "schema": {}
+}
