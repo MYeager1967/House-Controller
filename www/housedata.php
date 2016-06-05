@@ -36,8 +36,8 @@ function timedQuerySingle($statement){
 # construction easier.  At least initially.
 #$power = $db->querySingle("select rpower from power;");
 $mbeddim = timedQuerySingle('select "Status" from "Lights" where name="Master Bedroom";');
-$sunrise = timedQuerySingle("select Sunrise from SunInfo;");
-$sunset = timedQuerySingle("select Sunset from SunInfo;");
+$sunrise = timedQuerySingle("select Sunrise from OutsideConditions;");
+$sunset = timedQuerySingle("select Sunset from OutsideConditions;");
 # Current status of the two thermostats
 $ntm = timedQuerySingle(
 	'select status from thermostats where location="North";');
