@@ -1,0 +1,11 @@
+{
+  "title": "Daylight",
+  "description" : "A sensor that indicates whether it is daylight, based on calculated sunrise/sunset times",
+  "label-latitude": "Latitude",
+  "helper-latitude" : "Latitude (N/S in degrees) of the location",
+  "label-longitude": "Longitude",
+  "helper-longitude" : "Longitude (E/W in degrees) of the location",
+  "label-zenith" : "Zenith",
+  "optionlabels-zenith": ["Official sunset/sunrise", "Civil sunset/sunrise", "Nautical sunset/sunrise", "Astronomical sunset/sunrise"],
+  "helper-zenith" : "The zenith to use for the sunrise/sunset calculation."
+}

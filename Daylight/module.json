@@ -1,0 +1,56 @@
+{
+	"singleton" : false,
+	"dependencies" : ["Cron"],
+	"category" : "environment",
+	"author" : "Martijn van der Horst",
+	"homepage" : "",
+	"icon": "icon.png",
+	"moduleName": "Daylight",
+	"version": "1.0.0",
+	"maturity": "stable",
+	"defaults" : {
+		"title" : "__title__",
+		"description" : "__description__",
+		"latitude" : 0.000000,
+		"longitude" : 0.000000,
+		"zenith" : "official"
+	},
+	"schema" : {
+		"type" : "object",
+		"properties" : {
+			"latitude" : {
+				"type" : "number",
+				"default" : 0.000000,
+				"required" : true
+			},
+			"longitude" : {
+				"type" : "number",
+				"default" : 0.000000,
+				"required" : true
+			},
+			"zenith" : {
+				"type" : "string",
+                                "enum": ["official", "civil","nautical","astronomical"],
+				"default" : "official",
+				"required" : true
+			}
+		}
+	},
+	"options" : {
+		"fields" : {
+			"latitude" : {
+				"label" : "__label-latitude__",
+                                "helper": "__helper-latitude__"
+			},
+			"longitude" : {
+				"label" : "__label-longitude__",
+                                "helper": "__helper-longitude__"
+			},
+			"zenith" : {
+				"label" : "__label-zenith__",
+                                "optionLabels": "__optionlabels-zenith__",
+                                "helper": "__helper-zenith__"
+			}
+		}
+	}
+}
