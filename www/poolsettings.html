@@ -1,0 +1,1100 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta charset="UTF-8">
+<link rel="shortcut icon" href="http://192.168.0.220/favicon.ico" type="image/vnd.microsoft.icon"/>
+<link rel="icon" href="http://192.168.0.220/favicon.ico" type="image/x-ico"/>
+<link rel="stylesheet" type="text/css" href="./index_files/jquery.timepicker.css" />
+<style type="text/css">
+	body{background-color:lightgray;}
+	table {
+		
+		background:transparent;
+		margin-left:0 auto;
+	}
+	form {
+		margin:0;
+		padding:0;
+	}
+
+</style>
+<!--script src="./index_files/jquery.js"></script-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="./index_files/jquery.timepicker.js"></script>
+<script type="text/javascript" src="index_files/tween.js"></script>
+<script type="text/javascript" src="index_files/steelseries.js"></script>
+<script type="text/javascript" src="index_files/purl.js"></script>
+<script>
+
+$(document).ready(function(){
+	gatherdata();
+});
+
+function isNumber(n) {
+	return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function gatherdata(){
+	$.getJSON("housedata.php",function(data,status){ 
+		// the value false will cause the gauges
+		// to stop working and display 'NaN'
+		//if (isNumber(data.power)){
+		//	OutsideTempGauge.setValueAnimated(data.power);
+		//}
+
+		
+		OutsideTempNow = Number(data.outsidetemp);
+		Humidity = Number(data.outhumid);
+//		if (isNumber(data.outsidetemp)){
+//				OutsideTempGauge.setValueAnimated(data.outsidetemp);
+//				OutsideTempGauge.setMinMeasuredValue(data.outmin);
+//				OutsideTempGauge.setMaxMeasuredValue(data.outmax);
+//			}
+//		if(isNumber(data.outhumid)){
+//			OutsideHumidityGauge.setValueAnimated(data.outhumid);
+//			}	
+		if (isNumber(data.pt)){
+			PoolTempGauge.setValueAnimated(data.pt);
+			}
+		if (isNumber(data.poolsetpoint)){
+			PoolTempGauge.setThreshold(data.poolsetpoint);
+			}
+		if (isNumber(data.solardiff)){
+			SolarDifferentialGauge.setValueAnimated(data.solardiff);
+			}
+		if (isNumber(data.setdiff)){
+			SolarDifferentialGauge.setThreshold(data.setdiff);
+			}
+// If Pool Status Updated
+		if (WeatherUpdated != data.weatherupdated){
+			WeatherUpdated = data.weatherupdated;
+			// Update Temperature Gauge Trend Indicator
+//			if (OutsideTempNow > OutsideTempPrev) {	
+//				OutsideTempGauge.setTrend(steelseries.TrendState.UP);
+//				}
+//			else if (OutsideTempNow < OutsideTempPrev) {
+//				OutsideTempGauge.setTrend(steelseries.TrendState.DOWN);
+//				}
+//			else {
+//				OutsideTempGauge.setTrend(steelseries.TrendState.STEADY);
+//				}
+			// Update Humidity Gauge Trend Indicator	
+//			if (Humidity > HumidityPrev) {	
+//				OutsideHumidityGauge.setTrend(steelseries.TrendState.UP);
+//				}
+//			else if (Humidity < HumidityPrev) {
+//				OutsideHumidityGauge.setTrend(steelseries.TrendState.DOWN);
+//				}
+//			else {
+//				OutsideHumidityGauge.setTrend(steelseries.TrendState.STEADY);
+//				}
+			HumidityPrev = Humidity;
+			OutsideTempPrev = OutsideTempNow;
+			
+// Update Pump Status LED on Solar Differential Gauge
+			if ((data.pm == 1) && (data.ps == 1)) {												// System heating
+				if (data.solardiff > 0) {	
+					SolarDifferentialGauge.setUserLedColor(steelseries.LedColor.RED_LED);		// RED steady LED
+					SolarDifferentialGauge.blinkUserLed(false);
+					SolarDifferentialGauge.setUserLedOnOff(true);
+					}
+				else {
+						SolarDifferentialGauge.setUserLedColor(steelseries.LedColor.BLUE_LED);	// BLUE steady LED (Freeze Mode)
+						SolarDifferentialGauge.blinkUserLed(false);
+						SolarDifferentialGauge.setUserLedOnOff(true);
+					}
+				}
+			else if ((data.pm == 1) && (data.ps == 0)) {									// Pool pump running
+				SolarDifferentialGauge.setUserLedColor(steelseries.LedColor.GREEN_LED);
+				SolarDifferentialGauge.blinkUserLed(false);									// GREEN steady LED
+				SolarDifferentialGauge.setUserLedOnOff(true);
+				}
+			else if ((data.pm == 0) && (data.ps == 1)) {									// Collector in freeze protect mode
+				SolarDifferentialGauge.setUserLedColor(steelseries.LedColor.BLUE_LED);
+				SolarDifferentialGauge.blinkUserLed(true);									// BLUE blinking LED
+//				differentialGauge.setUserLedOnOff(true);
+				}
+			else {
+				SolarDifferentialGauge.setUserLedColor(steelseries.LedColor.GREEN_LED);		// System standby
+				SolarDifferentialGauge.setUserLedOnOff(false);
+				SolarDifferentialGauge.blinkUserLed(false);									// LED off
+				}		
+			}
+// End of pool updated code			
+		if (data.pm == 0){data.pm = 'Off';}	
+		else {data.pm = 'On';}
+		if (data.ps == 0){data.ps = 'Off';}	
+		else {data.ps = 'On';}
+		
+		$("#sunrise").text(data.sunrise);
+		$("#sunset").text(data.sunset);
+		
+// Assign Current Values to Input Boxes
+		$(document).ready(function(){
+			$("#poolsp").val(Number(data.poolsetpoint));
+			$("#solardif").val(Number(data.setdiff));
+			$("#cleanon").val(hours_am_pm(data.cleanon));
+			$("#cleanoff").val(hours_am_pm(data.cleanoff));
+			$("#chloron").val(hours_am_pm(data.chloron));
+			$("#chloroff").val(hours_am_pm(data.chloroff));
+			if (data.pumplowon == "88:88"){
+				data.pumplowon = 'All Day';
+				data.pumplowoff = '';
+				$("#pumplowon").val(data.pumplowon);
+				$("#pumplowoff").val(data.pumplowoff);
+				}
+			else if (data.pumplowon == "99:99"){
+				data.pumplowon = 'N/A';
+				data.pumplowoff = '';
+				$("#pumplowon").val(data.pumplowon);
+				$("#pumplowoff").val(data.pumplowoff);
+				}
+			else {
+			$("#pumplowon").val(hours_am_pm(data.pumplowon));
+			$("#pumplowoff").val(hours_am_pm(data.pumplowoff));
+				}
+			if (data.pumpmedon == "88:88"){
+				data.pumpmedon = 'All Day';
+				data.pumpmedoff = '';
+				$("#pumpmedon").val(data.pumpmedon);
+				$("#pumpmedoff").val(data.pumpmedoff);
+				}
+			else if (data.pumpmedon == "99:99"){
+				data.pumpmedon = 'N/A';
+				data.pumpmedoff = '';
+				$("#pumpmedon").val(data.pumpmedon);
+				$("#pumpmedoff").val(data.pumpmedoff);
+				}
+			else {
+				$("#pumpmedon").val(hours_am_pm(data.pumpmedon));
+				$("#pumpmedoff").val(hours_am_pm(data.pumpmedoff));
+			}
+			if (data.pumphighon == "88:88"){
+				data.pumphighon = 'All Day';
+				data.pumphighoff = '';
+				$("#pumphighon").val(data.pumphighon);
+				$("#pumphighoff").val(data.pumphighoff);
+				}
+			else if (data.pumphighon == "99:99"){
+				data.pumphighon = 'N/A';
+				data.pumphighoff = '';
+				$("#pumphighon").val(data.pumphighon);
+				$("#pumphighoff").val(data.pumphighoff);
+				}
+			else {
+				$("#pumphighon").val(hours_am_pm(data.pumphighon));
+				$("#pumphighoff").val(hours_am_pm(data.pumphighoff));
+			}
+		});
+		
+// Door Status / Locks
+		if (data.fdoorlock=="255"){
+			if(data.fdoorsensor == "0"){
+				$("#fdoorlock").css("background-color","lightgreen");
+				}
+			else{
+				$("#fdoorlock").css("background-color","yellow");
+				}
+			}
+		else if (data.fdoorlock=="0"){
+			if (data.fdoorsensor =="1"){
+				$("#fdoorlock").css("background-color","red");
+				}
+			else{
+				$("#fdoorlock").css("background-color","lightgray");
+				}
+			}
+		else{
+			$("#fdoorlock").css("background-color","yellow");
+			}
+		if (data.pdoorlock=="255"){
+			if(data.pdoorsensor == "0"){
+				$("#pdoorlock").css("background-color","lightgreen");
+				}
+			else{
+				$("#pdoorlock").css("background-color","yellow");
+				}
+			}
+		else if (data.pdoorlock=="0"){
+			if (data.pdoorsensor =="1"){
+				$("#pdoorlock").css("background-color","red");
+				}
+			else{
+				$("#pdoorlock").css("background-color","lightgray");
+				}
+			}
+		else{
+			$("#pdoorlock").css("background-color","yellow");
+			}
+		if (data.gdoorstat=="255"){
+			$("#gdoorstat").css("background-color","lightgreen");
+			}
+		else if (data.gdoorstat=="0"){
+			$("#gdoorstat").css("background-color","lightgray");
+			}
+		else{
+			$("#gdoorstat").css("background-color","yellow");
+			}
+			
+		// Z-Wave Lights and Devices
+		if (data.patiolight=="On"){
+			$("#patiolight").css("background-color","yellow");
+			}
+		else{
+			$("#patiolight").css("background-color","lightgray");
+			}
+		if (data.kitchenlight=="On"){
+			$("#kitchenlight").css("background-color","yellow");
+			}
+		else{
+			$("#kitchenlight").css("background-color","lightgray");
+			}
+		if (data.porchlight=="On"){
+			$("#porchlight").css("background-color","yellow");
+			}
+		else{
+			$("#porchlight").css("background-color","lightgray");
+			}
+		
+		// Pool Sign Status
+		if (data.poolsign=="On"){
+			$("#poolsign").css("background-color","yellow");
+			}
+		else{
+			$("#poolsign").css("background-color","lightgray");
+			}
+		// Pool Light and Color Wheel Status
+		if (data.poollight=="On"){
+			//$("#poollight").css("background-color","yellow");
+			if (data.colorwheel=="On"){
+				$("#poollight").css("background-color","lightblue");
+				//$("#poollight").text("Pool Light");
+				}
+			else{
+				$("#poollight").css("background-color","yellow");
+				//$("#poollight").text("Pool Light");
+				}
+			}
+		else{
+			//$("#poollight").text("Pool Light");
+			$("#poollight").css("background-color","lightgray");
+			}
+			
+		// these are the items for the thermostats
+		$("#ntm").text(data.ntm);
+			<!-- change the rotating fan image -->
+			if (data.ntm=="Recirc"){
+				$("#ntfi").attr("src","/images/FanGreenAnim.gif");
+				}
+			else if (data.ntm=="Cooling"){
+				$("#ntfi").attr("src","/images/FanBlueAnim.gif");
+				}
+			else if (data.ntm=="Heating"){
+				$("#ntfi").attr("src","/images/FanRedAnim.gif");
+				}
+			else {
+				$("#ntfi").attr("src","/images/FanBlack.gif");
+				}
+		$("#stm").text(data.stm);
+			if (data.stm=="Recirc"){
+				$("#stfi").attr("src","/images/FanGreenAnim.gif");
+				}
+			else if (data.stm=="Cooling"){
+				$("#stfi").attr("src","/images/FanBlueAnim.gif");
+				}
+			else if (data.stm=="Heating"){
+				$("#stfi").attr("src","/images/FanRedAnim.gif");
+				}
+			else {
+				$("#stfi").attr("src","/images/FanBlack.gif");
+				}
+		$("#ntt").text(data.ntt);
+		$("#stt").text(data.stt);
+		$("#ntms").text(data.ntms);
+		$("#stms").text(data.stms);
+		$("#ntfs").text(data.ntfs);
+		$("#stfs").text(data.stfs);
+		$("#ntts").text(data.ntts);
+		$("#stts").text(data.stts);
+		// items for the acid pump
+		//$("#aps").text(data.aps);
+		//$("#apl").text(data.apl);
+		//if (data.aps == "Off"){
+		//	$("#apboff").attr("disabled","disabled");
+		//	$("#apbon").removeAttr("disabled");
+		//	}
+		//else if (data.aps == "ON"){
+		//	$("#apbon").attr("disabled","disabled");
+		//	$("#apboff").removeAttr("disabled");
+		//	}
+		//else{
+		//	$("#apbon").attr("disabled","disabled");
+		//	$("#apboff").attr("disabled","disabled");
+		//	}
+		// garage door
+		$("#patioscene").text(data.patioscene);
+		//if (data.gd1 == "closed"){
+		//	$("#gd1cb").attr("disabled","disabled");
+		//	$("#gd1ob").removeAttr("disabled");
+		//	}
+		//else if (data.gd1 == "open"){
+		//	$("#gd1ob").attr("disabled","disabled");
+		//	$("#gd1cb").removeAttr("disabled");
+		//	}
+		//else{
+		//	$("#gd1ob").attr("disabled","disabled");
+		//	$("#gd1cb").attr("disabled","disabled");
+		//	}
+		//$("#gd2").text(data.gd2);
+		//if (data.gd2 == "closed"){
+		//	$("#gd2cb").attr("disabled","disabled");
+		//	$("#gd2ob").removeAttr("disabled");
+		//	}
+		//else if (data.gd2 == "open"){
+		//	$("#gd2ob").attr("disabled","disabled");
+		//	$("#gd2cb").removeAttr("disabled");
+		//	}
+		//else{
+		//	$("#gd2ob").attr("disabled","disabled");
+		//	$("#gd2cb").attr("disabled","disabled");
+		//	}
+		// water heater
+		//$("#wh").text(data.wh);
+		//if (data.wh == "on"){
+		//	$("#whonb").attr("disabled","disabled");
+		//	$("#whoffb").removeAttr("disabled");
+		//	$("#wh").css("color","red");
+		//	}
+		//else if (data.wh == "off"){
+		//	$("#whoffb").attr("disabled","disabled");
+		//	$("#whonb").removeAttr("disabled");
+		//	$("#wh").css("color","green");
+		//	}
+		//else{
+		//	$("#whoffb").attr("disabled","disabled");
+		//	$("#whonb").attr("disabled","disabled");
+		//	$("#wh").css("color","black");
+		//	}
+		// pool
+		
+		$("#pmode").text(data.pmode);
+		if (data.pmode == "0"){
+			$("#pmoff").css("background-color","red");
+			$("#pmon").css("background-color","lightgray");
+			$("#pmauto").css("background-color","lightgray");
+			$("#psoff").css("background-color","red");
+			$("#pslow").css("background-color","lightgray");
+			$("#psmed").css("background-color","lightgray");
+			$("#pshigh").css("background-color","lightgray");
+			}
+		if (data.pmode == "1"){
+			$("#pmoff").css("background-color","lightgray");
+			$("#pmon").css("background-color","lightgreen");
+			$("#pmauto").css("background-color","lightgray");
+			}
+		if (data.pmode == "2"){
+			$("#pmoff").css("background-color","lightgray");
+			$("#pmon").css("background-color","lightgray");
+			$("#pmauto").css("background-color","lightgreen");
+			}
+		//if (data.pmode > "0") {
+		if (data.pspeed == "0"){
+			$("#psoff").css("background-color","red");
+			$("#pslow").css("background-color","lightgray");
+			$("#psmed").css("background-color","lightgray");
+			$("#pshigh").css("background-color","lightgray");
+			}
+		if (data.pspeed == "1"){
+			$("#psoff").css("background-color","lightgray");
+			$("#pslow").css("background-color","lightgreen");
+			$("#psmed").css("background-color","lightgray");
+			$("#pshigh").css("background-color","lightgray");
+			}
+		if (data.pspeed == "2"){
+			$("#psoff").css("background-color","lightgray");
+			$("#pslow").css("background-color","lightgray");
+			$("#psmed").css("background-color","lightgreen");
+			$("#pshigh").css("background-color","lightgray");
+			}	
+		if (data.pspeed == "3"){
+			$("#psoff").css("background-color","lightgray");
+			$("#pslow").css("background-color","lightgray");
+			$("#psmed").css("background-color","lightgray");
+			$("#pshigh").css("background-color","lightgreen");
+			}
+			//}
+		$("#pw").text(data.pw);
+		$("#pl").text(data.pl);
+		$("#pf").text(data.pf);
+		$("#ps").text(data.ps);
+		//if (data.pm == "Off"){
+		//	data.pt = "Unavailable, Motor Off";
+		//	 $("#pt").css("color","red");
+		//}
+		//else{
+			 $("#pt").css("color","black");
+		//}
+		$("#pt").text(data.pt);
+	});
+	setTimeout(gatherdata, 1000);
+}
+
+</script>
+<script>
+// Catch and Process <option> Inputs
+	function changeSetP() {			// Pool Setpoint Input
+		var selectBox = document.getElementById("poolsp");
+		var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+		doit('pool','settemp=' + selectedValue)
+	};
+	
+	function changeDiff() {			// Solar Differential Input
+		var selectBox = document.getElementById("solardif");
+		var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+		doit('pool','setdiff=' + selectedValue)
+	};
+	
+// Function to Transfer Commands to House Controller
+	function doit(device,command){
+		$.post( "command.php",
+			{command:device+' '+command,secret:secret},
+			function(stuff){
+				$("#statusBox").append(stuff);
+				$bottom=$("#statusBox").prop('scrollHeight');
+				$("#statusBox").scrollTop($bottom);
+			}
+		);
+	};
+
+</script>
+</head>
+<center>
+<body onload="init()">
+<table border="1" cellpadding="3" cellspacing="1">
+<!--table border="1"> <!--Page Table -->
+	<tbody><tr> <!-- Title Line-->
+		<td style="text-align: center; color:black; background-color:lightgreen">
+		<h1>Pool Controller</h1>
+		</td>
+	</tr>
+	<tr> <!-- This holds the SteelSeries gauges -->
+		<td style="text-align: center;">
+		<!--canvas id="clockCanvas" width="200" height="200">No canvas in your browser...sorry...</canvas> 
+		<canvas id="OutsideTempCanvas" width="200" height="200"></canvas--> 
+		<canvas id="PoolTempCanvas" width="200" height="200">No canvas in your browser...sorry...</canvas>
+		<canvas id="SolarDifferentialCanvas" width="200" height="200"></canvas>
+		<canvas id="PoolpHCanvas" width="200" height="200"></canvas>
+		</td>
+	</tr>
+	<!tr> <!-- A place to put chart links -->
+		<!--td-->
+		<center>
+		<tbody><tr style="color:black; background-color:lightgreen">
+			<td colspan="3"><strong><center>Pool Controller Settings</center></strong></td>
+		</tr>
+		<center>
+		<tr>
+			<td>Pool System Mode : <!--span><id="pmode">Off</span-->
+			<button id="pmoff" style="background-color:lightgray" onclick="doit('pool','setmode=0')">Off</button>
+			<button id="pmon" style="background-color:lightgray" onclick="doit('pool','setmode=1')">On</button>
+			<button id="pmauto" style="background-color:lightgray" onclick="doit('pool','setmode=2')">Auto</button></center>
+			<!--button id="pmbl" style="background-color:lightgray" onclick="doit('pool','setmode=2')">Clean</button-->
+		</tr>
+		<center>
+		<tr>
+			<td>Pump Status : <!--span><id="pmode">Off</span-->
+			<button id="psoff" style="background-color:lightgray" onclick="doit('pool','speed=0')">Off</button>
+			<button id="pslow" style="background-color:lightgray" onclick="doit('pool','speed=1')">Low</button>
+			<button id="psmed" style="background-color:lightgray" onclick="doit('pool','speed=2')">Med</button>
+			<button id="pshigh" style="background-color:lightgray" onclick="doit('pool','speed=3')">High</button></center>
+			<!--button id="pmbl" style="background-color:lightgray" onclick="doit('pool','setmode=2')">Clean</button-->
+		</tr>
+		<tr>
+		<center>
+			<td colspan="2">Desired Pool Temp : 
+				<select id="poolsp" onchange="changeSetP();">
+				<option value="83">83</option> <option value="84">84</option>
+				<option value="85">85</option> <option value="86">86</option>
+				<option value="87">87</option> <option value="88">88</option>
+				<option value="89">89</option> <option value="90">90</option>
+				<option value="91">91</option> <option value="92">92</option>
+				</select>
+		</tr>
+		<center>
+			<td colspan="2">Solar Differential (On) :
+				<select id="solardif" onchange="changeDiff();">
+				<option value="15">15</option> <option value="20">20</option>
+				<option value="25">25</option> <option value="30">30</option>
+				<option value="35">35</option> <option value="40">40</option>
+				</select>
+		</tr>
+		
+		
+		<center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Pump High Start Time : <input id="pumphighon" type="text" class="time"> Stop Time : <input id="pumphighoff" type="text" class="time"/>
+			</form>
+		</tr>
+		
+		<center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Pump Med Start Time : <input id="pumpmedon" type="text" class="time"> Stop Time : <input id="pumpmedoff" type="text" class="time"/>
+			</form>
+		</tr>
+		
+		<center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Pump Low Start Time : <input id="pumplowon" type="text" class="time"> Stop Time : <input id="pumplowoff" type="text" class="time"/>
+			</form>
+		</tr>
+		
+		<center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Cleaning Start Time : <input id="cleanon" type="text" class="time"> Stop Time : <input id="cleanoff" type="text" class="time"/>
+			</form>
+		</tr>
+		
+		<center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Chlorinator Start Time : <input id="chloron" type="text" class="time"> Stop Time : <input id="chloroff" type="text" class="time"/>
+			</form>
+		</tr>
+		
+		<!--center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Cleaning Mode Stop Time : <input id="cleanoff" type="text" class="time"/>
+			</form>
+		</tr>
+		<!--center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Swim Mode Start Time : <input id="swimon" type="text" class="time"/>
+			</form>
+		</tr>
+		<center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Swim Mode Stop Time : <input id="swimoff" type="text" class="time"/>
+			</form>
+		</tr>
+		<center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Circulation Mode Start Time : <input id="circon" type="text" class="time"/>
+			</form>
+		</tr>
+		<center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Circulation Mode Stop Time : <input id="circoff" type="text" class="time"/>
+			</form>
+		</tr>
+		
+			<!--/td>
+		<!--/tr><!tr>
+			<td>Waterfall: <span id="pw">Off</span><br></td>
+			<td>
+			<button style="background-color:lightgray" onclick="doit('pool','waterfalloff')">Off</button>
+			<button style="background-color:lightgray" onclick="doit('pool','waterfallon')">On</button>
+			</td-->
+		<!--/tr>
+			<tr><td>Light: <span id="pl">Off</span><br></td>
+			<td>
+			<button style="background-color:lightgray" onclick="doit('pool','lightoff')">Off</button>
+			<button style="background-color:lightgray" onclick="doit('pool','lighton')">On</button>
+			</td>
+		</tr-->
+		<!--tr>
+			<td>Fountain: <span id="pf">Off</span><br></td>
+			<td>
+			<button style="background-color:lightgray" onclick="doit('pool','fountainoff')">Off</button>
+			<button style="background-color:lightgray" onclick="doit('pool','fountainon')">On</button>
+			</td>
+		</tr-->
+		<!--tr>
+		<!--Sunrise <div id="sunrise"></div> / Sunset <div id="sunset"></div>-->
+		<!--form>
+		<!--input style="background-color:lightgray" value="Xively Day Chart" onclick="parent.location='/Charts/XivelyTempGraph.html'" type="button">
+		<!--input style="background-color:lightgray" value="GroveStream Gauge" onclick="parent.location='/charts/grovegauge.html'" type="button">
+		<input style="background-color:lightgray" value="ThingSpeak Gauge" onclick="parent.location='/charts/thingspeaktemp.html'" type="button"-->
+		<!--/form-->
+		<!--/center>
+		</td>
+	<tr> <!-- And these are the preset buttons -->
+		<!--td style="text-align: center;">
+		Presets<br>
+		<button style="background-color:lightgray" onclick="doit('preset','acoff')">A/C System Off</button>
+		<button style="background-color:lightgray" onclick="doit('preset','temp98')">Temp=98</button>
+		<button style="background-color:lightgray" onclick="doit('preset','recirc')">Fans Recirc</button>
+		<button style="background-color:lightgray" onclick="doit('preset','summernight')">Summer Night</button>
+		<button style="background-color:lightgray" onclick="doit('preset','winternight')">Winter Night</button>
+		<button style="background-color:lightgray" onclick="doit('preset','peakno')">No Peak Handling</button>
+		<button style="background-color:lightgray" onclick="doit('preset','peakyes')">Peak Handling On</button>
+		<button style="background-color:lightgray" onclick="doit('resetcommand','all')">Reset Monitor</button>
+		</td-->
+	</tr-->
+	<!--/tr-->
+	<!--tr> <!-- A place to put chart links -->
+		<!--td>
+		<center>
+		Charts and Graphs<br>
+		<form>
+		<input style="background-color:lightgray" value="Xively Day Chart" onclick="parent.location='/Charts/XivelyTempGraph.html'" type="button">
+		<!--input style="background-color:lightgray" value="GroveStream Gauge" onclick="parent.location='/charts/grovegauge.html'" type="button">
+		<input style="background-color:lightgray" value="ThingSpeak Gauge" onclick="parent.location='/charts/thingspeaktemp.html'" type="button"-->
+		<!--/form>
+		</center>
+		</td-->
+	<!--/tr-->
+	<!--tr> <!-- this is where the door lock status goes -->
+		<!--td>
+		<center>
+		Door Status (Green is Locked)<br>
+		<!--input id="porchlight" style="background-color:lightgray" value="Front Porch" onclick="parent.location=''" type="button"-->
+		<!--input id="log" style="background-color:lightgray" value="Kitchen" onclick="parent.location=''" type="button"-->
+		<!--button id="fdoorlock" style="background-color:lightgray" onclick="doit('doors','LockFrontDoor')">Front</button>
+		<button id="pdoorlock" style="background-color:lightgray" onclick="doit('doors','LockPatioDoor')">Patio</button>
+		<button id="gdoorstat" style="background-color:lightgray" onclick="doit('doors','CloseGarage')">Garage</button>
+		<!--input id="patiolight" style="background-color:lightgray" value="Pool Deck" onclick="parent.location=''" type="button"-->
+		<!--br>
+		<!--button style="background-color:lightgray" onclick="doit('lights','OutsideLightsOn')">Lights On</button>
+		<button style="background-color:lightgray" onclick="doit('lights','OutsideLightsOff')">Lights Off</button-->
+		<!--/center>
+		</td>
+	</tr>
+	<tr> <!-- this is where the light status goes -->
+	<tr> <!-- this is where the light status goes -->
+		<td>
+		<center>
+		Controlled Light Status (Yellow is On)<br>
+		<!--input id="porchlight" style="background-color:lightgray" value="Front Porch" onclick="parent.location=''" type="button"-->
+		<!--input id="log" style="background-color:lightgray" value="Kitchen" onclick="parent.location=''" type="button"-->
+		<!--button id="kitchenlight" style="background-color:lightgray" onclick="doit('zwave','KitchenToggle')">Kitchen</button>
+		<button id="porchlight" style="background-color:lightgray" onclick="doit('zwave','PorchToggle')">Front Door</button-->
+		<button id="patiolight" style="background-color:lightgray" onclick="parent.location">Patio</button>
+		<button id="poollight" style="background-color:lightgray" onclick="parent.location">Pool</button>
+		<!--input id="patiolight" style="background-color:lightgray" value="Pool Deck" onclick="parent.location=''" type="button"-->
+		<br>
+		<!--button style="background-color:lightgray" onclick="doit('lights','OutsideLightsOn')">Lights On</button>
+		<button style="background-color:lightgray" onclick="doit('lights','OutsideLightsOff')">Lights Off</button-->
+		</center>
+		</td>
+	</tr>
+		<!--td>
+		<center>
+		Controlled Light Status (Yellow is On)<br>
+		<!--input id="porchlight" style="background-color:lightgray" value="Front Porch" onclick="parent.location=''" type="button"-->
+		<!--input id="log" style="background-color:lightgray" value="Kitchen" onclick="parent.location=''" type="button"-->
+		<!--button id="kitchenlight" style="background-color:lightgray" onclick="doit('lights','KitchenToggle')">Kitchen</button>
+		<button id="porchlight" style="background-color:lightgray" onclick="doit('wlights','PorchToggle')">Front Door</button>
+		<button id="patiolight" style="background-color:lightgray" onclick="parent.location">Pool Deck</button>
+		<!--input id="patiolight" style="background-color:lightgray" value="Pool Deck" onclick="parent.location=''" type="button"-->
+		<!--br>
+		<!--button style="background-color:lightgray" onclick="doit('lights','OutsideLightsOn')">Lights On</button>
+		<button style="background-color:lightgray" onclick="doit('lights','OutsideLightsOff')">Lights Off</button-->
+		<!--/center>
+		</td>
+	</tr>
+	<tr> <!-- this is where the device status goes -->
+		<td>
+		<center>
+		Device Status (Yellow is On)<br>
+		<!--input id="porchlight" style="background-color:lightgray" value="Front Porch" onclick="parent.location=''" type="button"-->
+		<!--input id="log" style="background-color:lightgray" value="Kitchen" onclick="parent.location=''" type="button"-->
+		<button id="poolsign" style="background-color:lightgray" onclick="doit('poolsign','Toggle')">Pool Sign</button>
+		<!--button id="poollight" style="background-color:lightgray" onclick="parent.location=''">Pool Light</button>
+		<!--button id="colorwheel" style="background-color:lightgray" onclick="parent.location=''">Color Wheel</button>
+		<!--input id="patiolight" style="background-color:lightgray" value="Pool Deck" onclick="parent.location=''" type="button"-->
+		<br>
+		<!--button style="background-color:lightgray" onclick="doit('lights','OutsideLightsOn')">Lights On</button>
+		<button style="background-color:lightgray" onclick="doit('lights','OutsideLightsOff')">Lights Off</button-->
+		</center>
+		</td>
+	</tr>
+	<tr> <!-- These are the devices -->
+		<!--td>
+		<!-- Table for the thermostats -->
+		<!--table border="1" cellpadding="3" cellspacing="1">
+		<tbody><tr style="color:black; background-color:yellow">
+			<td><strong><center>North Thermostat</center></strong></td>
+			<td><strong><center>South Thermostat</center></strong></td>
+		</tr>
+		<tr>
+			<td>Currently: <span id="ntm">Idle</span><br>
+			Temperature: <span id="ntt">76</span><br>
+			<img id="ntfi" src="index_files/FanBlack.gif" alt="" style="float:right" border="0" height="50" width="50"><br>
+			Settings:<br>
+			Mode: <span id="ntms">Off</span><br>
+			<center>
+			<button style="background-color:lightgray" onclick="doit('nthermo','modeOff')">Off</button>
+			<button style="background-color:lime" onclick="doit('nthermo','modeCool')">Cool</button>
+			<button style="background-color:salmon" onclick="doit('nthermo','modeHeat')">Heat</button>
+			</center>
+			Temperature: <span id="ntts">73</span><br>
+			<center>
+			<form action="javascript:void(0);">
+			Change: <input name="inputbox" value="75" min="60" max="99" type="number">
+				<input value="Set" onclick="doit('nthermo','temp=' + this.form.inputbox.value)" type="button">
+			</form>
+			</center>
+			Fan: <span id="ntfs">Auto</span><br>
+			<center>
+			<button style="background-color:lightgray" onclick="doit('nthermo','fanAuto')">Auto</button>
+			<button style="background-color:lightgray" onclick="doit('nthermo','fanOn')">On</button>
+			<button style="background-color:lightgray" onclick="doit('nthermo','fanRecirc')">Recirc</button>
+			</center>
+			</td>
+			<td>Currently: <span id="stm">Idle</span><br>
+			Temperature: <span id="stt">76</span><br>
+			<img id="stfi" src="index_files/FanBlack.gif" alt="" style="float:right" border="0" height="50" width="50"><br>
+			Settings:<br>
+			Mode: <span id="stms">Off</span><br>
+			<center>
+			<button style="background-color:lightgray" onclick="doit('sthermo','modeOff')">Off</button>
+			<button style="background-color:lime" onclick="doit('sthermo','modeCool')">Cool</button>
+			<button style="background-color:salmon" onclick="doit('sthermo','modeHeat')">Heat</button>
+			</center>
+			Temperature: <span id="stts">72</span><br>
+			<center>
+			<form action="javascript:void(0);">
+			Change: <input name="inputbox" value="75" min="60" max="99" type="number">
+				<input value="Set" onclick="doit('sthermo','temp=' + this.form.inputbox.value)" type="button">
+			</form>
+			</center>
+			Fan: <span id="stfs">Auto</span><br>
+			<center>
+			<button style="background-color:lightgray" onclick="doit('sthermo','fanAuto')">Auto</button>
+			<button style="background-color:lightgray" onclick="doit('sthermo','fanOn')">On</button>
+			<button style="background-color:lightgray" onclick="doit('sthermo','fanRecirc')">Recirc</button>
+			</center>
+			</td>
+		</tr>
+		</tbody></table>
+		<!-- Table for the swimming pool >
+		<table border="1" cellpadding="3" cellspacing="1">
+		<tbody><tr style="color:black; background-color:yellow">
+			<td colspan="3"><strong><center>Pool</center></strong></td>
+		</tr>
+		<tr>
+			<td>Pool Pump: <span id="pm">Off</span><br></td>
+			<td>
+			<button disabled="disabled" id="pmbo" style="background-color:lightgray" onclick="doit('pool','pumpoff')">Off</button>
+			<button id="pmbh" style="background-color:lightgray" onclick="doit('pool','pumphigh')">On</button>
+			<!--button id="pmbl" style="background-color:lightgray" onclick="doit('pool','pumplow')">Low</button>
+			</td-->
+		<!--/tr><!tr>
+			<td>Waterfall: <span id="pw">Off</span><br></td>
+			<td>
+			<button style="background-color:lightgray" onclick="doit('pool','waterfalloff')">Off</button>
+			<button style="background-color:lightgray" onclick="doit('pool','waterfallon')">On</button>
+			</td-->
+		<!--/tr>
+			<tr><td>Light: <span id="pl">Off</span><br></td>
+			<td>
+			<button style="background-color:lightgray" onclick="doit('pool','lightoff')">Off</button>
+			<button style="background-color:lightgray" onclick="doit('pool','lighton')">On</button>
+			</td>
+		</tr-->
+		<!--tr>
+			<td>Fountain: <span id="pf">Off</span><br></td>
+			<td>
+			<button style="background-color:lightgray" onclick="doit('pool','fountainoff')">Off</button>
+			<button style="background-color:lightgray" onclick="doit('pool','fountainon')">On</button>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">Solar: <span id="ps">Off</span><br></td>
+		</tr>
+		<tr>
+		<center>
+			<form action="javascript:void(0);">
+			<td colspan="2">Set Point: <input name="inputbox" value="85" min="80" max="95" type="number">
+				<input value="Set" onclick="doit('setpooltemp','temp=' + this.form.inputbox.value)" type="button">
+			</form>
+		</tr>
+		<tr>
+			<td colspan="2">Temp:  <span style="color: black;" id="pt">Pool Pump Off</span><br></td>
+		</tr>
+		</center>
+		<tr>
+			<td colspan="2">pH:    <span id="ph">---</span><br></td>
+		</tr>
+		<!--/tbody></table>
+		<!-- Table for the acid pump -->
+		<!--table border="1" cellpadding="3" cellspacing="1">
+		<tbody><tr style="color:black; background-color:yellow"> <!-- Title Row -->
+			<!--td><strong><center>Acid Pump</center></strong></td>
+		</tr>
+
+<!--The little diag window-->
+	<tr> 
+		<td>
+		<table>
+		<tbody><tr>
+			<td>
+			<button style="background-color:lightgray" onclick="$('#statusBox').toggle()">Diag</button>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<div id="statusBox" style="background-color: rgb(192, 255, 255); border-color: rgb(0, 0, 0); border-style: solid; border-width: 2px; font-family: Courier; font-size: 13px; height: 200px; overflow: auto; width: 400px; display: none;">
+				Diagnostic Window.<br></div>
+			</td>
+		</tr>
+		</tbody></table>
+		</td>
+	</tr>
+</tbody></table-->
+</center>
+<script>
+
+	var OutsideTempNow;
+	var OutsideTempPrev;
+	var Humidity;
+	var HumidityPrev;
+	var WeatherUpdated;
+	var secret;
+	function init(){
+		$('#statusBox').hide();
+		var url = $.url();
+		secret = url.param('secret');
+		
+// Initialize the gauges
+// Pool pH Gauge
+		PoolpHGauge = new steelseries.Radial('PoolpHCanvas', {
+			gaugeType: steelseries.GaugeType.TYPE4,
+			minValue:3,
+			maxValue:11,
+			size: 200,
+			frameDesign: steelseries.FrameDesign.BRASS,
+			knobStyle: steelseries.KnobStyle.BRASS,
+			pointerType: steelseries.PointerType.TYPE6,
+			backgroundColor: steelseries.BackgroundColor.STAINLESS,
+			lcdDecimals: 2,
+			section: null,
+			area: null,
+			titleString: 'pH',
+			unitString: '',
+			trendVisible: false,
+			minMeasuredValueVisible: false,
+			maxMeasuredValueVisible: false,
+			ledVisible : false,
+			thresholdVisible: false,
+			lcdVisible: true
+		});
+// Pool Temperature Gauge
+	    PoolTempGauge = new steelseries.Radial('PoolTempCanvas', {
+			gaugeType: steelseries.GaugeType.TYPE4,
+			minValue:50,
+			maxValue:100,
+			size: 200,
+			frameDesign: steelseries.FrameDesign.BRASS,
+			knobStyle: steelseries.KnobStyle.BRASS,
+			pointerType: steelseries.PointerType.TYPE6,
+			backgroundColor: steelseries.BackgroundColor.STAINLESS,
+			section: null,
+			lcdDecimals: 2,
+			area: null,
+			titleString: 'Pool Temp',
+			unitString: '°F',
+			minMeasuredValueVisible: false,
+			threshold: 87,
+			ledVisible: false,
+			thresholdVisible: true,
+			lcdVisible: true
+		});
+// Solar Differential Gauge
+		SolarDifferentialGauge = new steelseries.Radial('SolarDifferentialCanvas', {
+			gaugeType: steelseries.GaugeType.TYPE4,
+			minValue:-40,
+			maxValue:110,
+			size: 200,
+			frameDesign: steelseries.FrameDesign.BRASS,
+			knobStyle: steelseries.KnobStyle.BRASS,
+			pointerType: steelseries.PointerType.TYPE6,
+			backgroundColor: steelseries.BackgroundColor.STAINLESS,
+			section: null,
+			lcdDecimals: 2,
+			area: null,
+			titleString: 'Differential',
+			unitString: '°F',
+			userLedColor: steelseries.LedColor.GREEN,
+			userLedVisible: true,
+			threshold: 0,
+			ledVisible : false,
+			thresholdVisible: true,
+			lcdVisible: true
+		});
+	};
+	
+// JQuery Time Picker for Setting Pool Timers
+
+		$(function() {			// Clean Timer Start Time
+			$('#cleanon').timepicker();
+			$('#cleanon').timepicker({
+				'step': 15,
+				'timeFormat': 'h:i A',
+				'disableTouchKeyboard': true
+				});
+		});
+		$('#cleanon').on('changeTime', function() {
+			temp = am_pm_to_hours(this.form.cleanon.value)
+			doit('pool','cleanon=' + temp)
+		});
+		
+		$(function() {			// Clean Timer Stop Time
+			$('#cleanoff').timepicker();
+			$('#cleanoff').timepicker({
+				'step': 15,
+				'timeFormat': 'h:i A',
+//				'useSelect': true,
+				'disableTouchKeyboard': true
+				});
+        });
+		$('#cleanoff').on('changeTime', function() {
+			temp = am_pm_to_hours(this.form.cleanoff.value)
+			doit('pool','cleanoff=' + temp)
+		});
+		
+		$(function() {			// Chlorinator Start Time
+			$('#chloron').timepicker();
+			$('#chloron').timepicker({
+				'step': 15,
+				'timeFormat': 'h:i A',
+				'disableTouchKeyboard': true
+				});
+		});
+		$('#chloron').on('changeTime', function() {
+			temp = am_pm_to_hours(this.form.chloron.value)
+			doit('pool','chloron=' + temp)
+		});
+		
+		$(function() {			// Chlorinator Stop Time
+			$('#chloroff').timepicker();
+			$('#chloroff').timepicker({
+				'step': 15,
+				'timeFormat': 'h:i A',
+//				'useSelect': true,
+				'disableTouchKeyboard': true
+				});
+        });
+		$('#chloroff').on('changeTime', function() {
+			temp = am_pm_to_hours(this.form.chloroff.value)
+			doit('pool','chloroff=' + temp)
+		});
+		
+		$(function() {			// Pump Low Start Time
+			$('#pumplowon').timepicker();
+			$('#pumplowon').timepicker({
+				noneOption: [{'label': 'N/A','value': '99:99'},
+							 {'label': 'All Day','value': '88:88'}],
+				'step': 15,
+				'timeFormat': 'h:i A',
+//				'useSelect': true,
+				'disableTouchKeyboard': true
+				});
+        });
+		$('#pumplowon').on('changeTime', function() {
+			temp = am_pm_to_hours(this.form.pumplowon.value)
+			doit('pool','pumplowon=' + temp)
+		});
+		
+		$(function() {			// Pump Low Stop Time
+			$('#pumplowoff').timepicker();
+			$('#pumplowoff').timepicker({
+				'step': 15,
+				'timeFormat': 'h:i A',
+//				'useSelect': true,
+				'disableTouchKeyboard': true
+				});
+        });
+		$('#pumplowoff').on('changeTime', function() {
+			temp = am_pm_to_hours(this.form.pumplowoff.value)
+			doit('pool','pumplowoff=' + temp)	
+		});
+		
+		$(function() {			// Pump Med Start Time
+			$('#pumpmedon').timepicker();
+			$('#pumpmedon').timepicker({
+				noneOption: [{'label': 'N/A','value': '99:99'},
+							 {'label': 'All Day','value': '88:88'}],
+				'step': 15,
+				'timeFormat': 'h:i A',
+//				'useSelect': true,
+				'disableTouchKeyboard': true
+				});
+        });
+		$('#pumpmedon').on('changeTime', function() {
+			temp = am_pm_to_hours(this.form.pumpmedon.value)
+			doit('pool','pumpmedon=' + temp)
+		});
+		
+		$(function() {			// Pump Med Stop Time
+			$('#pumpmedoff').timepicker();
+			$('#pumpmedoff').timepicker({
+				'step': 15,
+				'timeFormat': 'h:i A',
+//				'useSelect': true,
+				'disableTouchKeyboard': true
+				});
+        });
+		$('#pumpmedoff').on('changeTime', function() {
+			temp = am_pm_to_hours(this.form.pumpmedoff.value)
+			doit('pool','pumpmedoff=' + temp)
+		});
+		
+		$(function() {			// Pump High Start Time
+			$('#pumphighon').timepicker();
+			$('#pumphighon').timepicker({
+				noneOption: [{'label': 'N/A','value': '99:99'},
+							 {'label': 'All Day','value': '88:88'}],
+				'step': 15,
+				'timeFormat': 'h:i A',
+//				'useSelect': true,
+				'disableTouchKeyboard': true
+				});
+        });
+			$('#pumphighon').on('changeTime', function() {
+				temp = am_pm_to_hours(this.form.pumphighon.value)
+				doit('pool','pumphighon=' + temp)
+		});
+		
+		$(function() {			// Pump High Stop Time
+			$('#pumphighoff').timepicker();
+			$('#pumphighoff').timepicker({
+				'step': 15,
+				'timeFormat': 'h:i A',
+//				'useSelect': true,
+				'disableTouchKeyboard': true
+				});
+        });
+		
+		$('#pumphighoff').on('changeTime', function() {
+			temp = am_pm_to_hours(this.form.pumphighoff.value)
+			doit('pool','pumphighoff=' + temp)
+		});
+		function am_pm_to_hours(time) {
+			if (time == "88:88") return time;
+			if (time == "99:99") return time;
+			console.log(time);
+			var hours = Number(time.match(/^(\d+)/)[1]);
+			var minutes = Number(time.match(/:(\d+)/)[1]);
+			var AMPM = time.match(/\s(.*)$/)[1];
+			if (AMPM == "PM" && hours < 12) hours = hours + 12;
+			if (AMPM == "AM" && hours == 12) hours = hours - 12;
+			var sHours = hours.toString();
+			var sMinutes = minutes.toString();
+			if (hours < 10) sHours = "0" + sHours;
+			if (minutes < 10) sMinutes = "0" + sMinutes;
+			return (sHours +':'+sMinutes);
+		}
+		function hours_am_pm(time) {
+			var hours = time[0] + time[1];
+			var min = time[3] + time[4];
+			if (hours < 12) {
+				if (hours == 0) {return '12:' + min + ' AM';}
+			return hours + ':' + min + ' AM';
+			} else {
+				hours=hours - 12;
+				if (hours < 10) { return '0' + hours + ':' + min + ' PM';}
+				hours=(hours.length < 10) ? '0'+hours:hours;
+				return hours+ ':' + min + ' PM';
+			}
+		}
+</script>
+</body>
+</html>
