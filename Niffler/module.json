@@ -1,0 +1,50 @@
+{
+	"singleton": false,
+	"dependencies": [],
+	"category": "automation",
+	"author": "Jens Troest",
+	"homepage": "https://github.com/jensmoes/Niffler",
+	"icon": "icon.png",
+	"version": "1.0.1",
+	"maturity": "stable",
+	"repository": {
+		"type": "git",
+		"source": "https://github.com/jensmoes/Niffler"
+	},
+	"defaults": {
+                "title": "Niffler",
+                "description": "Some devices do not send reports when used manually. This module will update the device status in the UI when this happens",
+                "sourceDevices": []
+	},
+	"schema": {
+		"type": "object",
+		"properties": {
+			"sourceDevices": {
+				"type": "array",
+				"items": {
+					"field": "enum",
+					"datasource": "namespaces",
+					"enum": "namespaces:devices_switchControl:deviceId,namespaces:devices_switchBinary:deviceId,namespaces:devices_switchMultilevel:deviceId,namespaces:devices_doorlock:deviceId",
+					"required": true
+				}
+			}
+		},
+		"required": false
+	},
+	"options": {
+		"fields": {
+			"sourceDevices": {
+				"label": "List of devices to niffle",
+                                "helper": "For switches sending out NIF or door locks sending out alarm events",
+				"fields": {
+					"item": {
+						"type": "select",
+						"datasource": "namespaces",
+						"field": "optionLabels",
+						"optionLabels": "namespaces:devices_switchControl:deviceName,namespaces:devices_switchBinary:deviceName,namespaces:devices_switchMultilevel:deviceName,namespaces:devices_doorlock:deviceName"
+					}
+				}
+			}
+		}
+	}
+}
