@@ -1,0 +1,58 @@
+1.07 2016 Jun 01, Wed
+    * Fix trigger name
+    * Improve texts
+    * Update module title
+    * Show source of checkRain trigger
+    * Set defaults
+    * Clarify config
+    * Improve comparison
+    * Set probeType
+
+1.06 2016 Mar 19, Sat
+    * Use imagePath from BaseModule
+    * Update installation howto
+    * Add doc link
+    * Clarify rain threshold logs
+    * Clarify rain detection source
+
+1.05 2016 Jan 08, Fri
+    * Rename title/description key to make module work in appstore
+    * Fix broken sensor detection
+    * Rename variable
+    * Update homepage and readme
+    * More frequent rain checks
+    * Use BaseModule
+    * Regular rain re-checks
+
+1.04 2015 Dec 20, Sun
+    * Add checks for rain intensity
+    * Documentation
+    * Call rain.stop only if rain actually stops
+    * Store rain sources
+    * German translation
+    * Emit events
+    * Clarify metrics:rain
+	* Various minor fixups
+
+1.03 2015 Nov 15, Sun
+    * Update from UI
+    * Handle snow as rain
+    * Add metrics:rain
+    * Add support for forecastIO
+    * Add notification if rain starts
+    * Add windows that should be reported if opened during rain start
+
+1.02 2015 Nov 02, Mon
+    * Fix rain sensor checks
+    * Cleanup module definition
+    * rain.stop event
+    * Add probeTitle to virtual device
+
+1.01 2015 Oct 25, Sun
+    * Fix device init
+    * Check for missing devices
+    * Indicate rain timeout state
+    * Sensor is initially off
+
+1.00 2015 Oct 16, Fri
+    * Initial version

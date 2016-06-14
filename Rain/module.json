@@ -1,0 +1,105 @@
+{
+   "author" : "Maroš Kollár",
+   "category" : "environment",
+   "defaults" : {
+      "description" : "__m_descr__",
+      "intensityThreshold" : 0,
+      "popThreshold" : 0,
+      "rainSensors" : [],
+      "title" : "__m_title__",
+      "windows" : []
+   },
+   "dependencies" : [
+      "BaseModule"
+   ],
+   "homepage" : "https://github.com/maros/Zway-Rain/",
+   "icon" : "icon.png",
+   "maturity" : "stable",
+   "moduleName" : "Rain",
+   "options" : {
+      "fields" : {
+         "intensityThreshold" : {
+            "helper" : "__intensity_threshold_helper__",
+            "label" : "__intensity_threshold_label__",
+            "order" : 3
+         },
+         "popThreshold" : {
+            "helper" : "__pop_threshold_helper__",
+            "label" : "__pop_threshold_label__",
+            "order" : 2
+         },
+         "rainSensors" : {
+            "fields" : {
+               "item" : {
+                  "datasource" : "namespaces",
+                  "field" : "devices",
+                  "optionLabels" : "namespaces:devices_sensorBinary:deviceName",
+                  "type" : "select"
+               }
+            },
+            "helper" : "__rain_sensors_helper__",
+            "label" : "__rain_sensors_label__",
+            "order" : 4
+         },
+         "timeout" : {
+            "helper" : "__timeout_helper__",
+            "label" : "__timeout_label__",
+            "order" : 1
+         },
+         "windows" : {
+            "fields" : {
+               "item" : {
+                  "datasource" : "namespaces",
+                  "field" : "optionLabels",
+                  "optionLabels" : "namespaces:devices_sensorBinary:deviceName",
+                  "type" : "select"
+               }
+            },
+            "helper" : "__windows_helper__",
+            "label" : "__windows_label__",
+            "order" : 5
+         }
+      }
+   },
+   "repository" : {
+      "source" : "https://github.com/maros/Zway-Rain",
+      "type" : "git"
+   },
+   "schema" : {
+      "properties" : {
+         "intensityThreshold" : {
+            "type" : "number"
+         },
+         "popThreshold" : {
+            "type" : "integer"
+         },
+         "rainSensors" : {
+            "items" : {
+               "datasource" : "namespaces",
+               "enum" : "namespaces:devices_sensorBinary:deviceId",
+               "field" : "enum",
+               "required" : true
+            },
+            "type" : "array",
+            "uniqueItems" : true
+         },
+         "timeout" : {
+            "type" : "integer"
+         },
+         "windows" : {
+            "items" : {
+               "datasource" : "namespaces",
+               "enum" : "namespaces:devices_sensorBinary:deviceId",
+               "field" : "enum",
+               "required" : true
+            },
+            "type" : "array",
+            "uniqueItems" : true
+         }
+      },
+      "required" : true,
+      "type" : "object"
+   },
+   "singleton" : true,
+   "version" : "1.07"
+}
